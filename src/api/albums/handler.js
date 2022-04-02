@@ -22,7 +22,7 @@ class AlbumsHandler {
         status: 'success',
         message: 'Albums berhasil ditambahkan',
         data: {
-          albumsId,
+          albumId: albumsId,
         },
       });
       response.code(201);
@@ -51,11 +51,11 @@ class AlbumsHandler {
   async getAlbumsByIdHandler(request, h) {
     try {
       const {id} = request.params;
-      const albums = await this._service.getAlbumsById(id);
+      const album = await this._service.getAlbumsById(id);
       return {
         status: 'success',
         data: {
-          albums,
+          album,
         },
       };
     } catch (error) {
