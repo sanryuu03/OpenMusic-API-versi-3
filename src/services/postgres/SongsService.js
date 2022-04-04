@@ -28,10 +28,37 @@ class SongsService {
     return result.rows[0].id;
   }
 
+  // failed
+  //   async getSongs() {
+  //     const result = await this._pool.query('SELECT * FROM songs');
+  //     return result.rows.map(mapDBToModelSong);
+  //   }
+
+  // failed
+  //   async getSongs(id, title, performer) {
+  //     const query = {
+  //       text: 'SELECT $1, $2, $3 FROM songs',
+  //       values: [id, title, performer],
+  //     };
+  //     const result = await this._pool.query(query);
+  //     return result.rows.map((song) => ({id: song.id, title: song.title, performer: song.performer}));
+  //   }
+
+  // berhasil
   async getSongs() {
-    const result = await this._pool.query('SELECT * FROM songs');
-    return result.rows.map(mapDBToModelSong);
+    const result = await this._pool.query('SELECT id, title, performer FROM songs');
+    return result.rows.map((song) => ({id: song.id, title: song.title, performer: song.performer}));
   }
+  // berhasil
+  //   async getSongs() {
+  //     const result = await this._pool.query('SELECT id, title, performer FROM songs');
+  //     return result.rows.map(mapDBToModelSong);
+  //   }
+  // berhasil
+  //   async getSongs() {
+  //     const result = await this._pool.query('SELECT * FROM songs');
+  //     return result.rows.map((song) => ({id: song.id, title: song.title, performer: song.performer}));
+  //   }
 
   async getSongById(id) {
     const query = {
@@ -50,7 +77,7 @@ class SongsService {
   async editSongById(id, {title, year, genre, performer, duration, albumId}) {
     const updatedAt = new Date().toISOString();
     const query = {
-      text: 'UPDATE songs SET title = $1, year = $2, genre = $3, performer = $4, duration = $5, albumId = $6, updated_at = $7 WHERE id = $8 RETURNING id',
+      text: 'UPDATE songs SET title = $1, year = $2, genre = $3, performer = $4, duration = $5, "albumId" = $6, updated_at = $7 WHERE id = $8 RETURNING id',
       values: [title, year, genre, performer, duration, albumId, updatedAt, id],
     };
 
