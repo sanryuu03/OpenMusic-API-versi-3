@@ -54,11 +54,9 @@ class AlbumsHandler {
       const album = await this._service.getAlbumsById(id);
       const songs = await this._service.getSongsInAlbum(id);
       const getDetailAlbumWichContainsSongs = {...album, songs};
-      console.log(`ini get detail ${getDetailAlbumWichContainsSongs}`);
       return {
         status: 'success',
         data: {
-        //   album,
           album: getDetailAlbumWichContainsSongs,
         },
       };
