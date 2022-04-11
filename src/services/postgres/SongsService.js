@@ -44,35 +44,53 @@ class SongsService {
   //     return result.rows.map((song) => ({id: song.id, title: song.title, performer: song.performer}));
   //   }
 
-  async getSongs(request, h) {
-    const {title, performer} = request.query;
+  async getSongs(title, performer) {
     let filteredSongs = await this._pool.query('SELECT id, title, performer FROM songs');
 
     if (title !== undefined) {
-      filteredSongs = filteredSongs.filter((song) => song.title === title);
+      const query = {
+        text: 'SELECT id, title, performer FROM songs WHERE LOWER(title) LIKE $1',
+        values: [`%${title}%`],
+      };
+      filteredSongs = await this._pool.query(query);
     }
 
     if (performer !== undefined) {
-      filteredSongs = filteredSongs.filter((song) => song.performer === performer);
+      filteredSongs = await this._pool.query(`SELECT id, title, performer FROM songs WHERE LOWER(performer) LIKE '%${performer}%'`);
     }
 
-    filteredSongs = filteredSongs.rows.map((song) => (
-      {
-        id: song.id,
-        title: song.title,
-        performer: song.performer,
-      }));
-
-    const response = h.response({
-      status: 'success',
-      data: {
-        songs: filteredSongs,
-      },
-    });
-
-    response.code(200);
-    return response;
+    return filteredSongs.rows.map(mapDBToModelSong);
   }
+
+  //   async getSongs(request, h) {
+  //     const {title, performer} = request.params;
+  //     let filteredSongs = await this._pool.query('SELECT id, title, performer FROM songs');
+
+  //     if (title !== undefined) {
+  //       filteredSongs = filteredSongs.filter((song) => song.title === title);
+  //     }
+
+  //     if (performer !== undefined) {
+  //       filteredSongs = filteredSongs.filter((song) => song.performer === performer);
+  //     }
+
+  //     filteredSongs = filteredSongs.rows.map((song) => (
+  //       {
+  //         id: song.id,
+  //         title: song.title,
+  //         performer: song.performer,
+  //       }));
+
+  //     const response = h.response({
+  //       status: 'success',
+  //       data: {
+  //         songs: filteredSongs,
+  //       },
+  //     });
+
+  //     response.code(200);
+  //     return response;
+  //   }
 
   // berhasil
   //   async getSongs() {
