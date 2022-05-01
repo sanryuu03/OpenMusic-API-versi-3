@@ -54,14 +54,25 @@ class AlbumsLikesService {
   async getLikesCount(albumId) {
     try {
       const result = await this._cacheService.get(`album_likes:${albumId}`);
+      /** https://hapi.dev/api/?v=20.2.1#-responseheadername-value-options */
       return {
-        count: JSON.parse(result),
+        /**
+         * https://hapi.dev/api/?v=20.2.1#-serveroptionsmime
+         * https://hapi.dev/api/?v=20.2.1#-responsesettings
+         * https://hapi.dev/api/?v=20.2.1#-requestgenerateresponsesource-options
+         */
         source: 'cache',
+        /**
+         * https://hapi.dev/api/?v=20.2.1#-servereventsoncriteria-listener
+         * https://hapi.dev/api/?v=20.2.1#-servereventsoncecriteria-listener
+         * https://hapi.dev/api/?v=20.2.1#-responsespacescount
+         */
+        count: JSON.parse(result),
       };
     } catch (error) {
       const query = {
         text: `SELECT * FROM user_album_likes WHERE "albumId" = $1`,
-        values: [`%${albumId}%`],
+        values: [albumId],
       };
 
       const result = await this._pool.query(query);
@@ -74,7 +85,6 @@ class AlbumsLikesService {
 
       return {
         count: result.rows.length,
-        source: 'db',
       };
     }
   }
